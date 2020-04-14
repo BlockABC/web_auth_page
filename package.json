@@ -1,0 +1,54 @@
+{
+  "name": "web_auth_page",
+  "version": "1.0.0",
+  "description": "blockabc_web_template",
+  "author": "Link <xie.al@qq.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlockABC/web_auth_page.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BlockABC/web_auth_page/issues"
+  },
+  "homepage": "https://github.com/BlockABC/web_auth_page",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nuxt",
+    "prebuild": "npm run i18n",
+    "build": "nuxt build",
+    "build:analyze": "nuxt build --analyze",
+    "prestart": "npm run build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore .",
+    "i18n": "i18n-abc scan && i18n-abc transform",
+    "test": "jest"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "js-cookie": "^2.2.1",
+    "nuxt": "^2.10.2",
+    "vue-i18n": "^8.15.0"
+  },
+  "devDependencies": {
+    "@nuxt/typescript-build": "^0.3.4",
+    "@nuxtjs/eslint-config": "^1.1.2",
+    "@nuxtjs/eslint-module": "^1.1.0",
+    "@nuxtjs/google-gtag": "^1.0.4",
+    "@nuxtjs/sentry": "^3.2.4",
+    "@nuxtjs/vuetify": "^1.9.0",
+    "@types/js-cookie": "^2.2.4",
+    "@vue/test-utils": "^1.0.0-beta.27",
+    "babel-eslint": "^10.0.3",
+    "babel-jest": "^24.9.0",
+    "cross-env": "^7.0.2",
+    "eslint": "^6.6.0",
+    "eslint-config-blockabc": "^0.9.0",
+    "eslint-plugin-nuxt": ">=0.5.0",
+    "i18n-abc": "^0.3.1",
+    "jest": "^24.9.0",
+    "ts-node": "^8.5.2",
+    "vue-jest": "^4.0.0-0"
+  }
+}
