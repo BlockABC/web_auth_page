@@ -1,5 +1,18 @@
+require('dotenv').config()
 const colors = require('vuetify/es5/util/colors').default
 const PROD = process.env.NODE_ENV === 'production'
+
+function stripSlash (str) {
+  if (typeof str !== str) {
+    return str
+  }
+
+  while (str.endsWith('/')) {
+    str = str.slice(0, -1)
+  }
+
+  return str
+}
 
 module.exports = {
   mode: 'spa',
@@ -28,16 +41,21 @@ module.exports = {
    */
   css: [
   ],
+  /*
+   * Only these environments is valid
+   */
   env: {
-    baseUrl: process.env.BASE_URL || 'http://127.0.0.1:3000',
-    backendUrl: process.env.BACKEND_URL || 'http://127.0.0.1:7000'
+    baseUrl: stripSlash(process.env.BASE_URL) || 'http://127.0.0.1:3000',
+    backendUrl: stripSlash(process.env.BACKEND_URL) || 'http://127.0.0.1:7000',
+    dappUrl: stripSlash(process.env.DAPP_ORIGIN) || 'http://127.0.0.1:8080',
+    loglevel: PROD ? 'info' : 'debug',
   },
   /*
    * Plugins to load before mounting the App
    */
   plugins: [
-    '~/plugins/i18n',
-    '~/plugins/service'
+    { src: '~/plugins/i18n', mode: 'client' },
+    { src: '~/plugins/service', mode: 'client' },
   ],
   /*
    * Nuxt.js dev-modules
@@ -46,7 +64,13 @@ module.exports = {
     ['@nuxt/typescript-build', {
       typeCheck: false,
     }],
-    '@nuxtjs/vuetify',
+    ['@nuxtjs/localforage', {
+      name: 'web-auth-page',
+      version: '1.0',
+    }],
+    ['@nuxtjs/vuetify', {
+      icons: 'mdiSvg'
+    }],
   ],
   /*
    * Nuxt.js modules
