@@ -15,5 +15,6 @@ export const CACHE = {
   },
   page: {
     buildTransaction: 'page.build-transaction',
+    signTransaction: 'page.sign-transaction',
   },
 }

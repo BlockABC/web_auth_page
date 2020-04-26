@@ -20,15 +20,19 @@ const keys = {
 
 export const authKeys = prefixStoreKeys(keys, 'auth')
 
-export const state = () => {
+export const state = (): AuthState => {
   return {
-    keypair: {},
+    keypair: null,
     nickname: '',
     profile: {},
   }
 }
 
-export type AuthState = ReturnType<typeof state>
+export type AuthState = {
+  keypair: any | null,
+  nickname: '',
+  profile: any,
+}
 
 export const mutations: MutationTree<AuthState> = {
   [keys.setAuth] (
@@ -36,7 +40,7 @@ export const mutations: MutationTree<AuthState> = {
     payload?: { keypair: IKeypair, nickname: string, canSign: boolean }
   ): void {
     if (!payload) {
-      state.keypair = {}
+      state.keypair = null
       state.nickname = ''
     }
     else {
@@ -63,6 +67,8 @@ export const actions: ActionTree<AuthState, RootState> = {
       ])
     }
 
+    this.$ckb.provider.setKeypairs({ keypairs: [keypair] })
+
     ctx.commit(keys.setAuth, { keypair, nickname })
     ctx.commit(keys.setProfile, profile)
 
@@ -81,6 +87,8 @@ export const actions: ActionTree<AuthState, RootState> = {
       this.$localForage.getItem(CACHE.ckb.profile),
     ])
 
+    this.$ckb.provider.setKeypairs({ keypairs: [keypair] })
+
     if (!keypair) {
       return null
     }
@@ -96,6 +104,8 @@ export const actions: ActionTree<AuthState, RootState> = {
       this.$localForage.removeItem(CACHE.ckb.nickname),
       this.$localForage.removeItem(CACHE.ckb.profile),
     ])
+
+    this.$ckb.provider.setKeypairs({ keypairs: [] })
 
     ctx.commit(keys.setAuth)
     ctx.commit(keys.setProfile)

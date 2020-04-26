@@ -3,7 +3,7 @@ import EventEmitter from 'eventemitter3'
 import { Context } from '@nuxt/types'
 
 import { INotifyMessage, IRequestTask, IResponseMessage, IResponseTask } from '~/interface'
-import { ParamError } from '~/error'
+import { ParamError, WebAuthError } from '~/error'
 import {
   assertNotNil,
   isMessage,
@@ -120,6 +120,15 @@ export class WindowMessage extends EventEmitter {
       message = { channel, id, result }
     }
     else if (error) {
+      // Convert error to plain object
+      if (error instanceof WebAuthError) {
+        error = {
+          code: error.code,
+          message: error.message,
+          data: null,
+        }
+      }
+
       message = { channel, id, error }
     }
     else {

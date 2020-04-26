@@ -8,5 +8,6 @@ declare module 'vuex/types/index' {
     app: NuxtAppOptions
     $router: VueRouter
     $localForage: any
+    $ckb: any
   }
 }

@@ -44,6 +44,11 @@ export interface IKeypair {
   wif: string,
 }
 
+export interface IUTXOToParam {
+  address: string,
+  value: string,
+}
+
 export interface IUTXOUnspent {
   txId: string,
   address: string,

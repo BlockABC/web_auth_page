@@ -1,10 +1,12 @@
 import { Context } from '@nuxt/types'
 import { Consola } from 'consola'
 import { CACHE } from '~/constants'
+import { WebAuthError } from '~/error'
 
-import { IKeypair, IRequestMessage } from '~/interface'
+import { IKeypair, IRequestMessage, IUTXOToParam, IUTXOUnspent } from '~/interface'
 import { hasKey, isFunction } from '~/modules/helper'
-import { log } from '~/services'
+import { $tt } from '~/plugins/i18n'
+import { ckb, log } from '~/services'
 import { WindowMessage } from '~/services/WindowMessage'
 import { authKeys } from '~/store/auth'
 
@@ -43,7 +45,7 @@ export class MessageController {
     wm.response({ id, result: 'pong' })
   }
 
-  async signIn ({ ctx, wm, id, params }: { ctx: Context, wm: WindowMessage, id: string, params: any }): Promise<void> {
+  async signIn ({ ctx, wm, id }: { ctx: Context, wm: WindowMessage, id: string }): Promise<void> {
     if (!process.env.PROD) {
       const cache = await ctx.store.dispatch(authKeys.signInWithCache)
       if (cache) {
@@ -71,8 +73,6 @@ export class MessageController {
     ) => {
       this._log.info(`Finish sign in flow [${id}] ...`)
 
-      ctx.app.$ckb.provider.setKeypairs({keypairs: [keypair]})
-
       ctx.store.dispatch(authKeys.signIn, { keypair, nickname, profile })
 
       wm.response({
@@ -87,15 +87,15 @@ export class MessageController {
   }
 
   signedIn (
-    { ctx, wm, params }:
-    { ctx: Context, wm: WindowMessage, params: { keypair: IKeypair, nickname: string, profile: any } }
+    { wm, params }:
+    { wm: WindowMessage, params: { keypair: IKeypair, nickname: string, profile: any } }
   ): void {
     wm.emit('signed', params)
   }
 
   async buildTransaction (
     { ctx, wm, id, params }:
-    { ctx: Context, wm: WindowMessage, id: string, params: any }
+    { ctx: Context, wm: WindowMessage, id: string, params:  { tos: IUTXOToParam[] } }
   ): Promise<void> {
     this._log.info(`Start transaction building flow [${id}] ...`)
 
@@ -105,14 +105,44 @@ export class MessageController {
     wm.once('transaction-built', async (params: { rawTx: RPC.RawTransaction }) => {
       this._log.info(`Finish transaction building flow [${id}] ...`)
 
-      console.log(params)
-
       wm.response({
         id,
         result: {
           signedTransaction: params.rawTx,
         }
       })
+    })
+  }
+
+  async signTransaction (
+    { ctx, wm, id, params }:
+    { ctx: Context, wm: WindowMessage, id: string, params: { unspents: IUTXOUnspent, rawTransaction: RPC.RawTransaction } }
+  ): Promise<void> {
+    this._log.info(`Start transaction signing flow [${id}] ...`)
+
+    // Pass params through storage
+    await ctx.app.$localForage.setItem(CACHE.page.signTransaction, params)
+
+    // Redirect page
+    ctx.redirect('/confirm-signing')
+
+    // Waiting for user's choice
+    wm.once('confirm-signing', async (confirmed: boolean) => {
+      if (confirmed) {
+        this._log.info(`Confirm transaction signing flow [${id}] ...`)
+
+        const signedTransaction = ckb.provider.sign({
+          transaction: params.rawTransaction,
+          unspents: params.unspents,
+        })
+
+        wm.response({ id, result: { signedTransaction } })
+      }
+      else {
+        this._log.info(`Cancel transaction signing flow [${id}] ...`)
+
+        wm.response({ id, error: WebAuthError.fromCode(200) })
+      }
     })
   }
 }
