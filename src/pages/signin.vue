@@ -2,12 +2,12 @@
   <v-row align="center" justify="center">
     <v-col cols="12" sm="8" md="4">
 
-      <v-card v-if="!needPassword" class="elevation-4" :loading="loading">
+      <v-card v-if="!needPassword" class="elevation-4">
         <v-toolbar color="primary" dark flat>
           <v-toolbar-title>{{$tt('Sign in with')}}</v-toolbar-title>
         </v-toolbar>
         <v-card-text class="d-flex justify-space-between">
-          <v-btn fab dark large color="blue" :loading="this.loading" @click.prevent="onTwitter">
+          <v-btn fab dark large color="blue" :loading="loading.twitter" @click.prevent="onTwitter">
             <v-icon>{{mdiTwitter}}</v-icon>
           </v-btn>
           <v-btn fab dark large color="grey lighten-1" @click.prevent="onGoogle">
@@ -22,7 +22,7 @@
         </v-card-text>
       </v-card>
 
-      <v-card v-else class="elevation-4" :loading="loading">
+      <v-card v-else class="elevation-4">
         <v-toolbar color="primary" dark flat>
           <v-toolbar-title>{{$tt('Hi, {nickname}', { nickname })}}</v-toolbar-title>
         </v-toolbar>
@@ -47,6 +47,7 @@
               v-else
               class="mt-4"
               color="success"
+              :loading="loading.submit"
               @click.prevent="onSubmitPassword"
             >{{$tt('Submit')}}</v-btn>
           </v-form>
@@ -74,7 +75,10 @@
         mdiTelegram,
         mdiGithub,
         // UI
-        loading: false,
+        loading: {
+          twitter: false,
+          submit: false,
+        },
         needPassword: false,
         needConfirm: true,
         password: '',
@@ -128,9 +132,9 @@
 
     methods: {
       onTwitter () {
-        if (!this.loading) {
+        if (!this.loading.twitter) {
           window.location.href = `${this.backendUrl}/auth/twitter?redirect=${this.currentUrl}`
-          this.loading = 'warning'
+          this.loading.twitter = true
         }
       },
       onGoogle () {
@@ -148,7 +152,13 @@
         }
       },
       onSubmitPassword () {
+        if (this.loading.submit) {
+          return
+        }
+
         if (this.$refs.signInForm.validate()) {
+          this.loading.submit = true
+
           // WARNING! Modify the following code will break users' keypair !!!
           // Generate keypair from openId and password
           const privateKey = sha256(this.openId + this.password)

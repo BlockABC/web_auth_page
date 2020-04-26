@@ -27,7 +27,7 @@
   }
 </script>
 
-<style lang="stylus">
+<style lang="scss">
 .loading {
   display: flex;
   flex-direction: column;

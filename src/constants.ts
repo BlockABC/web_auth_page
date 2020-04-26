@@ -6,3 +6,14 @@ export const LOG_LEVEL = {
   trace: 5,
   silent: Infinity
 }
+
+export const CACHE = {
+  ckb: {
+    keypair: 'ckb.keypair',
+    nickname: 'ckb.nickname',
+    profile: 'ckb.profile',
+  },
+  page: {
+    buildTransaction: 'page.build-transaction',
+  },
+}

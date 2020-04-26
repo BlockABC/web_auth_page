@@ -3,7 +3,7 @@ import { hasKey } from './modules/helper'
 
 export class WebAuthError extends CustomError {
   static readonly messages = {
-    1: 'Unkown error',
+    100: 'Sign in required.',
   }
 
   readonly code: number

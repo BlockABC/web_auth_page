@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-container class="fill-height" fluid>
+    <v-container class="fill-height pa-0" fluid>
       <nuxt />
     </v-container>
   </v-app>

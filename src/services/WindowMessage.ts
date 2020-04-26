@@ -31,8 +31,8 @@ export class WindowMessage extends EventEmitter {
   protected _win?: Window
   // Timer ID of timeout task cleaner
   protected _cleanTimerId: any
-  // Timeout limit for tasks' waiting for a response
-  protected _timeout = 60000
+  // Timeout limit for tasks' waiting for a response, default is 5 minutes
+  protected _timeout = 30000
 
   constructor () {
     super()
@@ -44,7 +44,7 @@ export class WindowMessage extends EventEmitter {
 
     window.addEventListener('message', this._listen.bind(this))
 
-    this._cleanTimerId = setInterval(this._cleanTimeoutTask.bind(this), 3000)
+    this._cleanTimerId = setInterval(this._cleanTimeoutTask.bind(this), 5000)
   }
 
   init ({ ctx, listenOrigin }: { ctx: Context, listenOrigin: string }): void {
@@ -201,7 +201,6 @@ export class WindowMessage extends EventEmitter {
     const message = e.data
     const event = `${message.channel}:*`
     if (isNotifyMessage(message)) {
-      this._log.debug(`Emit event: ${event}`)
       this.emit(event, message)
     }
     else if (isRequestMessage(message)) {
@@ -211,7 +210,6 @@ export class WindowMessage extends EventEmitter {
         message,
       })
 
-      this._log.debug(`Emit event: ${event}`)
       this.emit(event, message)
     }
     else if (isResponseMessage(message)) {

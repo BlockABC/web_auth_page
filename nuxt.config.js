@@ -1,4 +1,7 @@
+import localforage from 'localforage'
+
 require('dotenv').config()
+const pkgObj = require('./package.json')
 const colors = require('vuetify/es5/util/colors').default
 const PROD = process.env.NODE_ENV === 'production'
 
@@ -48,6 +51,7 @@ module.exports = {
    * Only these environments is valid
    */
   env: {
+    VERSION: pkgObj.version,
     PROD,
     baseUrl: stripSlash(process.env.BASE_URL) || 'http://127.0.0.1:3000',
     backendUrl: stripSlash(process.env.BACKEND_URL) || 'http://127.0.0.1:7000',
@@ -71,8 +75,10 @@ module.exports = {
       typeCheck: false,
     }],
     ['@nuxtjs/localforage', {
+      driver: [localforage.LOCALSTORAGE],
       name: 'web-auth-page',
       version: '1.0',
+      storeName: 'web-auth',
     }],
     ['@nuxtjs/vuetify', {
       icons: 'mdiSvg'

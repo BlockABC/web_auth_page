@@ -1,5 +1,7 @@
-export interface IRootState {
-}
+import { ConfigState } from './config'
+import { AuthState } from './auth'
 
-export default {
+export type RootState = {
+  config: ConfigState,
+  auth: AuthState,
 }

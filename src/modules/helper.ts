@@ -20,8 +20,8 @@ export function isString (val: any): val is string {
 export function isFunction (val: any): val is Function {
   return val && (
     val instanceof Function ||
-    {}.toString.call(functionToCheck) === '[object Function]' ||
-    (obj.constructor && obj.call && obj.apply)
+    {}.toString.call(val) === '[object Function]' ||
+    (val.constructor && val.call && val.apply)
   )
 }
 
@@ -76,3 +76,23 @@ export function sha256 (data: string | Buffer, encoding: 'utf8' | 'hex' | 'base6
   hash.update(data)
   return hash.digest(encoding)
 }
+
+/**
+ * Prefix keys in modules of store with namespace
+ *
+ * @param {T} keys
+ * @param {string} prefix
+ * @return {T}
+ */
+export function prefixStoreKeys<T> (keys: T, prefix: string): T {
+  const ret: any = {}
+
+  for (const key in keys) {
+    if (!Object.prototype.hasOwnProperty.call(keys, key)) continue
+
+    ret[key] = `${prefix}/${keys[key]}`
+  }
+
+  return ret
+}
+
