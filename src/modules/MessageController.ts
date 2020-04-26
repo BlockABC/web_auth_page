@@ -67,7 +67,7 @@ export class MessageController {
 
     wm.once('signed', async (
       { keypair, nickname, profile }:
-        { keypair: IKeypair, nickname: string, profile: any }
+      { keypair: IKeypair, nickname: string, profile: any }
     ) => {
       this._log.info(`Finish sign in flow [${id}] ...`)
 
@@ -93,6 +93,26 @@ export class MessageController {
     wm.emit('signed', params)
   }
 
+  async buildTransaction (
+    { ctx, wm, id, params }:
+    { ctx: Context, wm: WindowMessage, id: string, params: any }
+  ): Promise<void> {
+    this._log.info(`Start transaction building flow [${id}] ...`)
+
+    await ctx.app.$localForage.setItem(CACHE.page.buildTransaction, params)
+    ctx.redirect('/build-transaction')
+
+    wm.once('transaction-built', async (params: { rawTx: RPC.RawTransaction }) => {
+      this._log.info(`Finish transaction building flow [${id}] ...`)
+
+      console.log(params)
+
+      wm.response({
+        id,
+        result: {
+          signedTransaction: params.rawTx,
+        }
+      })
     })
   }
 }

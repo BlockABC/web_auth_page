@@ -1,7 +1,7 @@
 import createHash from 'create-hash'
 
 import { ParamError } from '~/error'
-import { IError, INotifyMessage, IRequestMessage, IResponseMessage } from '~/interface'
+import { IError, INotifyMessage, IRequestMessage, IResponseMessage, IUTXOInput, IUTXOOutput } from '~/interface'
 
 export function assertNotNil (name: string, val: any): void {
   if (!val) {
@@ -96,3 +96,21 @@ export function prefixStoreKeys<T> (keys: T, prefix: string): T {
   return ret
 }
 
+/**
+ * Find out unique addresses from inputs/outputs
+ *
+ * @param {IUTXOInput[] | IUTXOOutput[]} arr
+ * @return {string[]}
+ */
+export function uniqAddresses (arr: IUTXOInput[] | IUTXOOutput[]): string[] {
+  const existed: string[] = []
+  arr.forEach((item: IUTXOInput | IUTXOOutput): void => {
+    if (existed.includes(item.address)) {
+      return
+    }
+
+    existed.push(item.address)
+  })
+
+  return existed
+}

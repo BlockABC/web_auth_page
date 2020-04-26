@@ -36,3 +36,28 @@ export interface IError {
   data: any | null
   message: string,
 }
+
+export interface IKeypair {
+  privateKey: string,
+  publicKey: string,
+  address: string,
+  wif: string,
+}
+
+export interface IUTXOUnspent {
+  txId: string,
+  address: string,
+  vout: number,
+  value: any,
+  lock?: any,
+  lockHash?: string,
+}
+
+export type IUTXOInput = IUTXOUnspent
+
+export interface IUTXOOutput {
+  address: string,
+  value: any,
+  type?: string,
+  asm?: string,
+}

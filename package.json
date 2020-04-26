@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@mdi/js": "^5.1.45",
+    "@nervosnetwork/ckb-sdk-rpc": "^0.31.0",
     "@nuxt/typescript-build": "^0.6.5",
     "@nuxtjs/eslint-config": "^2.0.0",
     "@nuxtjs/eslint-module": "^1.1.0",
