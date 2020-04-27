@@ -46,7 +46,15 @@ module.exports = {
    * Global CSS
    */
   css: [
+    '~/assets/main.scss'
   ],
+  /*
+   * Transaction
+   */
+  pageTransition: {
+    name: 'page',
+    mode: 'out-in',
+  },
   /*
    * Only these environments is valid
    */
