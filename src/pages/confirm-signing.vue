@@ -37,7 +37,6 @@
     name: 'confirm-signing',
     async asyncData ({ app, store }) {
       const keypair = store.state.auth.keypair
-      console.log(keypair)
       if (!keypair) {
         throw WebAuthError.fromCode(100)
       }
@@ -70,10 +69,12 @@
 
     methods: {
       async onConfirm () {
-        this.$wm.emit('confirm-signing', true)
+        this.$wm.emit('confirm-signing', { confirm: true })
+        this.$router.replace('/')
       },
       async onCancel () {
-        this.$wm.emit('confirm-signing', false)
+        this.$wm.emit('confirm-signing', { confirm: false })
+        this.$router.replace('/')
       }
     }
   }

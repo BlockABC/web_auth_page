@@ -1,24 +1,19 @@
 <template>
-  <v-row align="center" justify="center">
-    <v-col cols="12" sm="8" md="4">
-      Web Auth
-    </v-col>
-  </v-row>
+  <v-card class="page-confirm-building" height="100%" width="100%" flat tile>
+    <v-toolbar color="primary" dark dense>
+      <v-toolbar-title>{{$tt('Web Auth')}}</v-toolbar-title>
+    </v-toolbar>
+
+    <v-card-text>
+      Welcome to customize your own Web Auth !
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import Logo from '~/components/Logo.vue'
 
 export default {
-  components: {
-    Logo,
-  },
-  computed: {
-    ...mapState(['config'])
-  },
   async mounted () {
-    // const ret = await this.$backend.ABCService.getTokens()
     this.$backend.ping()
   }
 }

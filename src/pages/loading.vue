@@ -15,8 +15,22 @@
         textMap: {
           default: this.$tt('Loading ...'),
           signIn: this.$tt('Please allow popup window to continuing sign in ...'),
+          'confirm-building': this.$tt('Loading latest unspents from network ...'),
         }
       }
+    },
+    mounted () {
+      setTimeout(() => {
+        const subject = this.$route.query.subject
+        switch (subject) {
+          case 'confirm-building':
+            this.$router.replace('/confirm-building')
+            break
+          case 'confirm-signing':
+            this.$router.replace('/confirm-signing')
+            break
+        }
+      }, 500)
     },
     computed: {
       text () {
@@ -36,7 +50,7 @@
   width: 100%;
 
   h4 {
-    max-width: 60%;
+    max-width: 80%;
   }
 }
 </style>

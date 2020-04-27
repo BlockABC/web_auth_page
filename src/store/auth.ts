@@ -30,7 +30,7 @@ export const state = (): AuthState => {
 
 export type AuthState = {
   keypair: any | null,
-  nickname: '',
+  nickname: string,
   profile: any,
 }
 

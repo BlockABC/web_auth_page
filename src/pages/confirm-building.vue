@@ -1,5 +1,5 @@
 <template>
-  <v-card class="page-build-transaction" height="100%" width="100%" flat tile>
+  <v-card class="page-confirm-building" height="100%" width="100%" flat tile>
     <v-toolbar color="primary" dark dense>
       <v-toolbar-title>{{$tt('Building transaction')}}</v-toolbar-title>
     </v-toolbar>
@@ -17,7 +17,7 @@
               <h4 class="pa-0 grey--text">From</h4>
               <v-list-item class="pa-0">
                 <v-list-item-content class="pa-0">
-                  <v-list-item-title v-for="address in inputs">{{address}}</v-list-item-title>
+                  <v-list-item-title v-for="address in inputs" :key="address">{{address}}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -26,7 +26,7 @@
               <h4 class="pa-0 grey--text">To</h4>
               <v-list-item class="pa-0">
                 <v-list-item-content class="pa-0">
-                  <v-list-item-title v-for="address in outputs">{{address}}</v-list-item-title>
+                  <v-list-item-title v-for="address in outputs" :key="address">{{address}}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -35,11 +35,13 @@
               :label="$tt('Total Amount')"
               v-model="value"
               suffix="CKB"
+              hide-details
               disabled />
             <v-text-field
               :label="$tt('Total Change')"
               v-model="change"
               suffix="CKB"
+              hide-details
               disabled />
             <v-text-field
               type="number"
@@ -48,34 +50,33 @@
               min="1"
               max="10"
               suffix="CKB/Byte"
+              hide-details
               @blur="onFeeRateChange" />
             <v-text-field
               :label="$tt('Estimated Fee')"
               v-model="fee"
               suffix="CKB"
+              hide-details
               disabled
               readonly />
-
-            <v-btn
-              class="mt-4"
-              color="success"
-              @click="onSubmit"
-            >{{$tt('Submit')}}</v-btn>
           </v-form>
         </v-card-text>
       </v-tab-item>
       <v-tab-item key="raw">
         <v-card-text>
-          <code style="overflow-wrap: anywhere;">{{ txJSON }}</code>
+          <code>{{ txJSON }}</code>
         </v-card-text>
       </v-tab-item>
     </v-tabs-items>
+
+    <v-card-actions class="px-4 pt-0">
+      <v-btn color="success" @click="onConfirm">{{$tt('Confirm')}}</v-btn>
+      <v-btn color="error" @click="onCancel">{{$tt('Cancel')}}</v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
 <script>
-  import { mapState } from 'vuex'
-
   import { CACHE } from '~/constants'
   import { WebAuthError } from '~/error'
   import { uniqAddresses } from '~/modules/helper'
@@ -83,7 +84,7 @@
   let tx
 
   export default {
-    name: 'build-transaction',
+    name: 'confirm-building',
     async asyncData ({ app, store }) {
       const keypair = store.state.auth.keypair
       if (!keypair) {
@@ -91,6 +92,7 @@
       }
 
       const params = await app.$localForage.getItem(CACHE.page.buildTransaction)
+      await app.$localForage.removeItem(CACHE.page.buildTransaction)
 
       tx = await app.$ckb.provider.buildAutoFixTransaction({
         froms: [
@@ -116,7 +118,6 @@
     data () {
       return {
         // UI
-        loading: false,
         tab: '',
         // transaction
         rawTx: null,
@@ -129,8 +130,6 @@
       }
     },
     computed: {
-      ...mapState('auth', ['keypair']),
-
       txJSON () {
         return JSON.stringify(this.rawTx, null, '  ')
       },
@@ -145,23 +144,28 @@
         this.change = parseInt(tx.change) / 1e8
         this.fee = parseInt(tx.fee) / 1e8
       },
-      async onSubmit () {
-        await this.$localForage.removeItem(CACHE.page.buildTransaction)
-
-        this.$wm.emit('transaction-built', {
-          rawTx: tx.toJSON(),
-        })
+      async onConfirm () {
+        this.$wm.emit('confirm-building', { confirm: true, signedTransaction: tx.toJSON() })
+        this.$router.replace('/')
+      },
+      async onCancel () {
+        this.$wm.emit('confirm-building', { confirm: false, signedTransaction: null })
+        this.$router.replace('/')
       }
     }
   }
 </script>
 
 <style lang="scss">
-.page-build-transaction {
+.page-confirm-building {
   .v-list {
     &>.v-list-item {
       min-height: 0;
     }
+  }
+
+  code {
+    overflow-wrap: anywhere;
   }
 }
 </style>

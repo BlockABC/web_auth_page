@@ -5,9 +5,7 @@ import { WebAuthError } from '~/error'
 
 import { IKeypair, IRequestMessage, IUTXOToParam, IUTXOUnspent } from '~/interface'
 import { hasKey, isFunction } from '~/modules/helper'
-import { $tt } from '~/plugins/i18n'
-import { ckb, log } from '~/services'
-import { WindowMessage } from '~/services/WindowMessage'
+import { wm, ckb, log } from '~/services'
 import { authKeys } from '~/store/auth'
 
 /**
@@ -23,7 +21,7 @@ export class MessageController {
     this._log = log.withTag('MessageController')
   }
 
-  bind ({ ctx, wm }: { ctx: Context, wm: WindowMessage }): void {
+  bind ({ ctx }: { ctx: Context }): void {
     wm.on(`${this._channel}:*`, (message: IRequestMessage) => {
       const method = message.method
       if (method === 'bind') {
@@ -41,11 +39,11 @@ export class MessageController {
     })
   }
 
-  ping ({ wm, id }: { wm: WindowMessage, id: string }): void {
+  ping ({ id }: { id: string }): void {
     wm.response({ id, result: 'pong' })
   }
 
-  async signIn ({ ctx, wm, id }: { ctx: Context, wm: WindowMessage, id: string }): Promise<void> {
+  async signIn ({ ctx, id }: { ctx: Context, id: string }): Promise<void> {
     if (!process.env.PROD) {
       const cache = await ctx.store.dispatch(authKeys.signInWithCache)
       if (cache) {
@@ -87,48 +85,60 @@ export class MessageController {
   }
 
   signedIn (
-    { wm, params }:
-    { wm: WindowMessage, params: { keypair: IKeypair, nickname: string, profile: any } }
+    { params }:
+    { params: { keypair: IKeypair, nickname: string, profile: any } }
   ): void {
     wm.emit('signed', params)
   }
 
   async buildTransaction (
-    { ctx, wm, id, params }:
-    { ctx: Context, wm: WindowMessage, id: string, params:  { tos: IUTXOToParam[] } }
+    { ctx, id, params }:
+    { ctx: Context, id: string, params:  { tos: IUTXOToParam[] } }
   ): Promise<void> {
     this._log.info(`Start transaction building flow [${id}] ...`)
 
+    // Pass params through storage
     await ctx.app.$localForage.setItem(CACHE.page.buildTransaction, params)
-    ctx.redirect('/build-transaction')
 
-    wm.once('transaction-built', async (params: { rawTx: RPC.RawTransaction }) => {
-      this._log.info(`Finish transaction building flow [${id}] ...`)
+    // Redirect UI to corresponding page
+    ctx.redirect('/loading', { subject: 'confirm-building' })
 
-      wm.response({
-        id,
-        result: {
-          signedTransaction: params.rawTx,
-        }
-      })
+    // Waiting for user's choice
+    wm.once('confirm-building', async ({ confirm, signedTransaction }: { confirm: boolean, signedTransaction: RPC.RawTransaction }) => {
+      if (!confirm) {
+        this._log.info(`Cancel transaction building flow [${id}] ...`)
+
+        wm.response({ id, error: WebAuthError.fromCode(200) })
+      }
+      else {
+        this._log.info(`Confirm transaction building flow [${id}] ...`)
+
+        wm.response({ id, result: { signedTransaction } })
+      }
     })
   }
 
   async signTransaction (
-    { ctx, wm, id, params }:
-    { ctx: Context, wm: WindowMessage, id: string, params: { unspents: IUTXOUnspent, rawTransaction: RPC.RawTransaction } }
+    { ctx, id, params }:
+    { ctx: Context, id: string, params: { unspents: IUTXOUnspent, rawTransaction: RPC.RawTransaction } }
   ): Promise<void> {
     this._log.info(`Start transaction signing flow [${id}] ...`)
 
     // Pass params through storage
     await ctx.app.$localForage.setItem(CACHE.page.signTransaction, params)
 
-    // Redirect page
-    ctx.redirect('/confirm-signing')
+    // Redirect UI to corresponding page
+    ctx.redirect('/loading', { subject: 'confirm-signing' })
+
 
     // Waiting for user's choice
-    wm.once('confirm-signing', async (confirmed: boolean) => {
-      if (confirmed) {
+    wm.once('confirm-signing', async ({ confirm }: { confirm: boolean }) => {
+      if (!confirm) {
+        this._log.info(`Cancel transaction signing flow [${id}] ...`)
+
+        wm.response({ id, error: WebAuthError.fromCode(200) })
+      }
+      else {
         this._log.info(`Confirm transaction signing flow [${id}] ...`)
 
         const signedTransaction = ckb.provider.sign({
@@ -137,11 +147,6 @@ export class MessageController {
         })
 
         wm.response({ id, result: { signedTransaction } })
-      }
-      else {
-        this._log.info(`Cancel transaction signing flow [${id}] ...`)
-
-        wm.response({ id, error: WebAuthError.fromCode(200) })
       }
     })
   }
