@@ -26,21 +26,21 @@ export interface INotifyMessage {
 
 export interface IResponseMessage {
   channel: string,
-  error?: IError
+  error?: IError,
   id: string,
   result?: any,
 }
 
 export interface IError {
   code: number,
-  data: any | null
+  data: any | null,
   message: string,
 }
 
 export interface IKeypair {
+  address: string,
   privateKey: string,
   publicKey: string,
-  address: string,
   wif: string,
 }
 
@@ -50,19 +50,19 @@ export interface IUTXOToParam {
 }
 
 export interface IUTXOUnspent {
-  txId: string,
   address: string,
-  vout: number,
-  value: any,
   lock?: any,
   lockHash?: string,
+  txId: string,
+  value: any,
+  vout: number,
 }
 
 export type IUTXOInput = IUTXOUnspent
 
 export interface IUTXOOutput {
   address: string,
-  value: any,
-  type?: string,
   asm?: string,
+  type?: string,
+  value: any,
 }

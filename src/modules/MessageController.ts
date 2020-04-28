@@ -16,6 +16,7 @@ import { authKeys } from '~/store/auth'
 export class MessageController {
   protected _log: Consola
   protected _channel = 'default'
+  protected _signInWin: Window | null = null
 
   constructor() {
     this._log = log.withTag('MessageController')
@@ -60,28 +61,36 @@ export class MessageController {
       }
     }
 
-    this._log.info(`Start OAuth sign in flow [${id}] ...`)
+    if (!this._signInWin || this._signInWin.closed) {
+      this._log.info(`Start OAuth sign in flow [${id}] ...`)
 
-    ctx.redirect('/loading', { subject: 'signIn' })
-    window.open(process.env.baseUrl + '/signin')
+      ctx.redirect('/loading', { subject: 'signIn' })
 
-    wm.once('signed', async (
-      { keypair, nickname, profile }:
-      { keypair: IKeypair, nickname: string, profile: any }
-    ) => {
-      this._log.info(`Finish sign in flow [${id}] ...`)
+      const width = 360
+      const height = 600
+      const left = window.screenLeft + (window.outerWidth - width) / 2
+      const top = window.screenTop + (window.outerHeight - height) / 2
+      const features = `left=${left},top=${top},width=${width},height=${height},scrollbars=0,resizable=0`
+      this._signInWin = window.open(process.env.baseUrl + '/signin', 'window', features)
 
-      ctx.store.dispatch(authKeys.signIn, { keypair, nickname, profile })
+      wm.once('signed', async (
+        { keypair, nickname, profile }:
+        { keypair: IKeypair, nickname: string, profile: any }
+      ) => {
+        this._log.info(`Finish sign in flow [${id}] ...`)
 
-      wm.response({
-        id,
-        result: {
-          address: keypair.address,
-          nickname,
-          profile,
-        }
+        ctx.store.dispatch(authKeys.signIn, { keypair, nickname, profile })
+
+        wm.response({
+          id,
+          result: {
+            address: keypair.address,
+            nickname,
+            profile,
+          }
+        })
       })
-    })
+    }
   }
 
   signedIn (
@@ -104,7 +113,10 @@ export class MessageController {
     ctx.redirect('/loading', { subject: 'confirm-building' })
 
     // Waiting for user's choice
-    wm.once('confirm-building', async ({ confirm, signedTransaction }: { confirm: boolean, signedTransaction: RPC.RawTransaction }) => {
+    wm.once('confirm-building', async (
+      { confirm, signedTransaction }:
+      { confirm: boolean, signedTransaction: RPC.RawTransaction }
+    ) => {
       if (!confirm) {
         this._log.info(`Cancel transaction building flow [${id}] ...`)
 

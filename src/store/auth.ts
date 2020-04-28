@@ -87,11 +87,11 @@ export const actions: ActionTree<AuthState, RootState> = {
       this.$localForage.getItem(CACHE.ckb.profile),
     ])
 
-    this.$ckb.provider.setKeypairs({ keypairs: [keypair] })
-
     if (!keypair) {
       return null
     }
+
+    this.$ckb.provider.setKeypairs({ keypairs: [keypair] })
 
     ctx.commit(keys.setAuth, { keypair, nickname })
     ctx.commit(keys.setProfile, profile)
