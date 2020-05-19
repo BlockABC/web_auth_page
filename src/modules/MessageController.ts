@@ -73,31 +73,40 @@ export class MessageController {
       const features = `left=${left},top=${top},width=${width},height=${height},scrollbars=0,resizable=0`
       this._signInWin = window.open(process.env.baseUrl + '/signin', 'window', features)
 
-      wm.once('signed', async (
-        { keypair, nickname, profile }:
-        { keypair: IKeypair, nickname: string, profile: any }
+      wm.once('confirm-sign-in', async (
+        { confirm, keypair, nickname, profile }:
+        { confirm: boolean, keypair: IKeypair, nickname: string, profile: any }
       ) => {
-        this._log.info(`Finish sign in flow [${id}] ...`)
+        if (!confirm) {
+          this._log.info(`Cancel sign in flow [${id}] ...`)
 
-        ctx.store.dispatch(authKeys.signIn, { keypair, nickname, profile })
+          wm.response({ id, error: WebAuthError.fromCode(200) })
+        }
+        else {
+          this._log.info(`Finish sign in flow [${id}] ...`)
 
-        wm.response({
-          id,
-          result: {
-            address: keypair.address,
-            nickname,
-            profile,
-          }
-        })
+          ctx.store.dispatch(authKeys.signIn, { keypair, nickname, profile })
+
+          wm.response({
+            id,
+            result: {
+              address: keypair.address,
+              nickname,
+              profile,
+            }
+          })
+        }
+
+        ctx.redirect('/')
       })
     }
   }
 
   signedIn (
     { params }:
-    { params: { keypair: IKeypair, nickname: string, profile: any } }
+    { params: { confirm: boolean, keypair: IKeypair, nickname: string, profile: any } }
   ): void {
-    wm.emit('signed', params)
+    wm.emit('confirm-sign-in', params)
   }
 
   async buildTransaction (
@@ -161,6 +170,29 @@ export class MessageController {
         wm.response({ id, result: { signedTransaction } })
       }
     })
+  }
+
+  async pushTransaction (
+    { ctx, id, params }:
+    { ctx: Context, id: string, params: { rawTransaction: RPC.RawTransaction } }
+  ): Promise<void> {
+    this._log.info(`Push transaction flow [${id}] ...`)
+
+    let txId
+    try {
+      txId = await ckb.provider.pushTransaction({ transaction: params.rawTransaction })
+    }
+    catch (err) {
+      if (err.name === 'RPCError') {
+        err.data = null
+        wm.response({ id, error: err })
+      }
+      else {
+        wm.response({ id, error: new WebAuthError(300, `Push transaction failed: ${err.message}`) })
+      }
+    }
+
+    wm.response({ id, result: { txId } })
   }
 }
 

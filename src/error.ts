@@ -5,6 +5,7 @@ export class WebAuthError extends CustomError {
   static readonly messages = {
     100: 'Sign in required.',
     200: 'User rejected request',
+    300: 'Push transaction failed'
   }
 
   readonly code: number

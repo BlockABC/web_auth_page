@@ -20,6 +20,10 @@ function stripSlash (str) {
 module.exports = {
   mode: 'spa',
   srcDir: 'src',
+  server: {
+    host: process.env.HOSTNAME,
+    port: process.env.PORT,
+  },
   /*
    * Headers of the page
    */
@@ -63,7 +67,7 @@ module.exports = {
     PROD,
     baseUrl: stripSlash(process.env.BASE_URL) || 'http://127.0.0.1:3000',
     backendUrl: stripSlash(process.env.BACKEND_URL) || 'http://127.0.0.1:7000',
-    dappUrl: stripSlash(process.env.DAPP_ORIGIN) || 'http://127.0.0.1:8080',
+    dappUrl: stripSlash(process.env.DAPP_URL) || 'http://127.0.0.1:8080',
     loglevel: PROD ? 'info' : 'debug',
     CKB_CHAIN_ID: process.env.CKB_CHAIN_ID,
     CKB_RPC_URL: process.env.CKB_RPC_URL,

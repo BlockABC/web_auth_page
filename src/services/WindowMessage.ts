@@ -2,8 +2,8 @@ import { Consola } from 'consola'
 import EventEmitter from 'eventemitter3'
 import { Context } from '@nuxt/types'
 
-import { INotifyMessage, IRequestTask, IResponseMessage, IResponseTask } from '~/interface'
-import { ParamError, WebAuthError } from '~/error'
+import { INotifyMessage, IRequestMessage, IRequestTask, IResponseMessage, IResponseTask } from '~/interface'
+import { ParamError } from '~/error'
 import {
   assertNotNil,
   isMessage,
@@ -16,19 +16,19 @@ import { log } from './log'
 
 export class WindowMessage extends EventEmitter {
   protected _ctx!: Context
+  protected _inIframe: boolean
 
   protected _defaultChannel = 'default'
+  protected _defaultWin?: Window
+  protected _defaultOrigin?: string
   // ID of request messages
   protected _id: number
   protected _log: Consola
   // received requests need response
   protected _needToResponse: Map<string, IResponseTask>
-  protected _listenOrigin?: string
   // Tasks need to be cleaned up on a regular basis.
   // sent out requests wait for response
   protected _waitForResponse: Map<string, IRequestTask>
-  // window
-  protected _win?: Window
   // Timer ID of timeout task cleaner
   protected _cleanTimerId: any
   // Timeout limit for tasks' waiting for a response, default is 5 minutes
@@ -36,6 +36,14 @@ export class WindowMessage extends EventEmitter {
 
   constructor () {
     super()
+
+    // Check if window is in iframe
+    try {
+      this._inIframe = window.self !== window.top;
+    }
+    catch {
+      this._inIframe = true
+    }
 
     this._id = 1
     this._needToResponse = new Map()
@@ -55,35 +63,29 @@ export class WindowMessage extends EventEmitter {
     this._log.info('Init WindowMessage ...')
     this._ctx = ctx
 
-    // Check if window is in iframe
-    let inIframe: boolean
-    try {
-      inIframe = window.self !== window.top;
-    }
-    catch {
-      inIframe = true
-    }
-
     // If opened by self, only communicate with self
     if (window.opener && window.opener.origin === window.origin) {
-      this._log.info('Set opener as message target.')
-      this._win = window.opener
-      this._listenOrigin = window.opener.origin
+      this._log.info('Set opener as default target.')
+      this._defaultWin = window.opener
+      this._defaultOrigin = window.opener.origin
     }
     // If embedded as iframe, communicate with parent
-    else if (inIframe) {
-      this._log.info('Set parent as message target.')
-      this._win = window.parent
-      this._listenOrigin = this._cleanOrigin(listenOrigin)
+    else if (this._inIframe) {
+      this._log.info('Set parent as default target.')
+      this._defaultWin = window.parent
+      this._defaultOrigin = this._cleanOrigin(listenOrigin)
     }
+    // If open directly, communicate with self
     else {
-      throw new Error('Web Auth Page must be embedded in an iframe.')
+      this._log.info('Set self as default target.')
+      this._defaultWin = window
+      this._defaultOrigin = window.origin
     }
   }
 
   notify (
-    { channel, method, params = null }:
-    { channel?: string, method: string, params?: any }
+    { channel, method, params = null, target = 'default' }:
+    { channel?: string, method: string, params?: any, target?: any }
   ) {
     assertNotNil('method', method)
     channel = channel ?? this._defaultChannel
@@ -94,10 +96,40 @@ export class WindowMessage extends EventEmitter {
       params,
     }
 
-    this._log.info(`Notify ${this._listenOrigin}.`)
+    this._log.info(`Notify target ${target}.`)
     this._log.debug(`Notify content:`, message)
-    this._win!.postMessage(message, this._listenOrigin!)
-    window.postMessage(message, '*')
+    this._postMessage(message, target)
+  }
+
+  request<T>(
+    { channel, method, params = null, target = 'default' }:
+    { channel?: string; method: string; params?: any, target?: any }
+  ): Promise<T> {
+    assertNotNil('method', method)
+    channel = channel ?? this._defaultChannel
+
+    const id = this._id++
+    const key = `${channel}-${id}`
+    const message: IRequestMessage = {
+      channel,
+      id: '' + id,
+      method,
+      params,
+    }
+
+    const promise = new Promise<any>((resolve, reject) => {
+      this._waitForResponse.set(key, {
+        createdAt: new Date(),
+        resolve,
+        reject,
+        message,
+      })
+    })
+
+    this._log.info(`Request target ${target}.`)
+    this._log.debug(`Request content:`, message)
+    this._postMessage(message, target)
+    return promise
   }
 
   response (
@@ -121,13 +153,11 @@ export class WindowMessage extends EventEmitter {
     }
     else if (error) {
       // Convert error to plain object
-      if (error instanceof WebAuthError) {
-        error = {
-          code: error.code,
-          message: error.message,
-          data: null,
-        }
-      }
+      error = Object.assign({
+        code: error.code ?? 1,
+        message: error.message,
+        data: null,
+      }, error)
 
       message = { channel, id, error }
     }
@@ -135,9 +165,9 @@ export class WindowMessage extends EventEmitter {
       throw new Error(`Response must contain result or error, but both is nil.`)
     }
 
-    this._log.info(`Response ${this._listenOrigin}.`)
+    this._log.info(`Response ${this._defaultOrigin}.`)
     this._log.debug(`Response content:`, message)
-    task.source.postMessage(message, this._listenOrigin!)
+    task.source.postMessage(message, this._defaultOrigin!)
     this._needToResponse.delete(key)
   }
 
@@ -180,6 +210,27 @@ export class WindowMessage extends EventEmitter {
   }
 
   /**
+   * Post message to target
+   *
+   * @param {IRequestMessage | INotifyMessage} message
+   * @param {string} target
+   */
+  protected _postMessage (message: IRequestMessage | INotifyMessage, target = 'default') {
+    let win: Window
+    let origin: string
+    if (target === 'self') {
+      win = window
+      origin = window.origin
+    }
+    else {
+      win = this._defaultWin!
+      origin = this._defaultOrigin!
+    }
+
+    win.postMessage(message, origin)
+  }
+
+  /**
    * Handle message sent to current window
    *
    * @param {Event} e
@@ -202,7 +253,7 @@ export class WindowMessage extends EventEmitter {
       return
     }
     // skip message from invalid page
-    else if (![this._listenOrigin, window.location.origin].includes(this._cleanOrigin(e.origin))) {
+    else if (![this._defaultOrigin, window.location.origin].includes(this._cleanOrigin(e.origin))) {
       this._log.warn(`Skip message because its origin is invalid.`)
       return
     }
