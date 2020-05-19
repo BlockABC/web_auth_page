@@ -1,8 +1,8 @@
 <template>
-  <div class="loading">
+  <v-container class="loading fill-height" fluid>
     <v-progress-circular :size="50" color="primary" indeterminate />
     <h4 class="mt-2">{{text}}</h4>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -10,6 +10,12 @@
 
   export default {
     name: 'loading',
+    head () {
+      return {
+        title: 'Loading ...',
+      }
+    },
+
     data () {
       return {
         textMap: {

@@ -1,61 +1,54 @@
 <template>
-  <v-row align="center" justify="center">
-    <v-col cols="12" sm="8" md="4">
-
-      <v-card v-if="!needPassword" class="elevation-4">
-        <v-toolbar color="primary" dark flat>
-          <v-toolbar-title>{{$tt('Sign in with')}}</v-toolbar-title>
-        </v-toolbar>
-        <v-card-text class="d-flex justify-space-between">
-          <v-btn fab dark large color="blue" :loading="loading.twitter" @click.prevent="onTwitter">
-            <v-icon>{{mdiTwitter}}</v-icon>
-          </v-btn>
-          <v-btn fab dark large color="grey lighten-1" @click.prevent="onGoogle">
-            <v-icon>{{mdiGoogle}}</v-icon>
-          </v-btn>
-          <v-btn fab dark large color="grey lighten-1" @click.prevent="onFacebook">
-            <v-icon>{{mdiFacebook}}</v-icon>
-          </v-btn>
-          <v-btn fab dark large color="grey lighten-1" @click.prevent="onTelegram">
-            <v-icon>{{mdiTelegram}}</v-icon>
-          </v-btn>
-        </v-card-text>
-      </v-card>
-
-      <v-card v-else class="elevation-4">
-        <v-toolbar color="primary" dark flat>
-          <v-toolbar-title>{{$tt('Hi, {nickname}', { nickname })}}</v-toolbar-title>
-        </v-toolbar>
-        <v-card-text>
-          <v-form ref="signInForm">
-            <v-text-field
-              class="mt-0 pt-2"
-              type="password"
-              :label="$tt('Keypair Password')"
-              :hint="$tt('This password and your openid will be used to derive the keypair. PLEASE KEEP IT SAFELY!')"
-              persistent-hint
-              :rules="rules.password"
-              v-model="password"
-            ></v-text-field>
-            <v-btn
-              v-if="needConfirm"
-              class="mt-4"
-              color="error"
-              @click.prevent="onConfirm"
-            >{{$tt('Confirmed, I will keep it safely.')}}</v-btn>
-            <v-btn
-              v-else
-              class="mt-4"
-              color="success"
-              :loading="loading.submit"
-              @click.prevent="onSubmitPassword"
-            >{{$tt('Submit')}}</v-btn>
-          </v-form>
-        </v-card-text>
-      </v-card>
-
-    </v-col>
-  </v-row>
+  <v-container class="page-signin" fluid>
+    <template v-if="!needPassword">
+      <div class="social-btns">
+        <v-btn fab dark large color="blue" :loading="loading.twitter" @click.prevent="onTwitter">
+          <v-icon>{{mdiTwitter}}</v-icon>
+        </v-btn>
+        <v-btn fab dark large color="grey lighten-1" @click.prevent="onGoogle">
+          <v-icon>{{mdiGoogle}}</v-icon>
+        </v-btn>
+        <v-btn fab dark large color="grey lighten-1" @click.prevent="onFacebook">
+          <v-icon>{{mdiFacebook}}</v-icon>
+        </v-btn>
+        <v-btn fab dark large color="grey lighten-1" @click.prevent="onTelegram">
+          <v-icon>{{mdiTelegram}}</v-icon>
+        </v-btn>
+      </div>
+      <div class="footer">
+        <v-btn color="error" @click="onCancel">{{$tt('Cancel')}}</v-btn>
+      </div>
+    </template>
+    <template v-else>
+<!--      {{$tt('Hi, {nickname}', { nickname })}}-->
+      <div class="password-form">
+        <v-form ref="signInForm">
+          <v-text-field
+            class="mt-0 pt-2"
+            type="password"
+            :label="$tt('Keypair Password')"
+            :hint="$tt('This password and your openid will be used to derive the keypair. PLEASE KEEP IT SAFELY!')"
+            persistent-hint
+            :rules="rules.password"
+            v-model="password"
+          ></v-text-field>
+          <v-btn
+            v-if="needConfirm"
+            class="mt-4"
+            color="error"
+            @click.prevent="onConfirm"
+          >{{$tt('Confirmed, I will keep it safely.')}}</v-btn>
+          <v-btn
+            v-else
+            class="mt-4"
+            color="success"
+            :loading="loading.submit"
+            @click.prevent="onSubmitPassword"
+          >{{$tt('Submit')}}</v-btn>
+        </v-form>
+      </div>
+    </template>
+  </v-container>
 </template>
 
 <script>
@@ -66,6 +59,12 @@
 
   export default {
     name: 'signin',
+    head () {
+      return {
+        title: 'Sign In',
+      }
+    },
+
     data () {
       return {
         // icons
@@ -146,6 +145,18 @@
       onTelegram () {
 
       },
+      onCancel () {
+        // Notify window.opener with keypair
+        this.$wm.notify({
+          method: 'signedIn',
+          params: {
+            confirm: false,
+          }
+        })
+
+        // It would be timesaving for debug if you comment the line below
+        window.close()
+      },
       onConfirm () {
         if (this.$refs.signInForm.validate()) {
           this.needConfirm = false
@@ -170,6 +181,7 @@
           this.$wm.notify({
             method: 'signedIn',
             params: {
+              confirm: true,
               keypair,
               nickname: this.nickname,
               profile: this.profile,
@@ -184,6 +196,23 @@
   }
 </script>
 
-<style>
+<style lang="scss">
+.page-signin {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
+  &>.social-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+  }
+
+  &>.password-form {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+  }
+}
 </style>

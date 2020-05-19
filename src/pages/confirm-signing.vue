@@ -1,32 +1,35 @@
 <template>
-  <v-card class="page-confirm-singing" height="100%" width="100%" flat tile>
-    <v-toolbar color="primary" dark dense>
-      <v-toolbar-title>{{$tt('Signing transaction')}}</v-toolbar-title>
-    </v-toolbar>
+  <v-container class="page-confirm-singing py-0 fill-height" fluid>
+    <v-row>
+      <v-col>
+        <v-tabs v-model="tab">
+          <v-tab key="raw">{{ $tt('RAW') }}</v-tab>
+          <v-tab key="unspents">{{ $tt('Unspents') }}</v-tab>
+        </v-tabs>
+      </v-col>
+    </v-row>
 
-    <v-tabs v-model="tab">
-      <v-tab key="raw">{{ $tt('RAW') }}</v-tab>
-      <v-tab key="unspents">{{ $tt('Unspents') }}</v-tab>
-    </v-tabs>
 
-    <v-tabs-items v-model="tab">
-      <v-tab-item key="raw">
-        <v-card-text>
-          <code>{{ rawTxJSON }}</code>
-        </v-card-text>
-      </v-tab-item>
-      <v-tab-item key="unspents">
-        <v-card-text>
-          <code>{{ unspentsJSON }}</code>
-        </v-card-text>
-      </v-tab-item>
-    </v-tabs-items>
+    <v-row>
+      <v-col>
+        <v-tabs-items v-model="tab">
+          <v-tab-item key="raw">
+            <code>{{ rawTxJSON }}</code>
+          </v-tab-item>
+          <v-tab-item key="unspents">
+            <code>{{ unspentsJSON }}</code>
+          </v-tab-item>
+        </v-tabs-items>
+      </v-col>
+    </v-row>
 
-    <v-card-actions class="px-4 pt-0">
-      <v-btn color="success" @click="onConfirm">{{$tt('Confirm')}}</v-btn>
-      <v-btn color="error" @click="onCancel">{{$tt('Cancel')}}</v-btn>
-    </v-card-actions>
-  </v-card>
+    <v-row>
+      <v-col>
+        <v-btn color="success" @click="onConfirm">{{$tt('Confirm')}}</v-btn>
+        <v-btn color="error" @click="onCancel">{{$tt('Cancel')}}</v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -82,8 +85,14 @@
 
 <style lang="scss">
 .page-confirm-singing {
-  code {
-    overflow-wrap: anywhere;
+  .v-window {
+    .v-window-item {
+      overflow: hidden;
+
+      &>code {
+        overflow-wrap: anywhere;
+      }
+    }
   }
 }
 </style>
