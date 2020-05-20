@@ -219,7 +219,7 @@ npm run dev
 
 ## Issues
 
-请随意地前往 [Issues](https://github.com/BlockABC/web_auth_server/issues) 提出你的问题。
+请随意地前往 [Issues](https://github.com/BlockABC/web_auth_page/issues) 提出你的问题。
 
 
 ## License

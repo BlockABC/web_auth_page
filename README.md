@@ -222,7 +222,7 @@ We use a little tweaked version of standardjs: https://github.com/BlockABC/eslin
 
 ## Issues
 
-Please feel free to submit your questions at [Issues](https://github.com/BlockABC/web_auth_server/issues).
+Please feel free to submit your questions at [Issues](https://github.com/BlockABC/web_auth_page/issues).
 
 
 ## License
