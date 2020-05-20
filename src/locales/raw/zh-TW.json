@@ -1,9 +1,9 @@
 {
-  "Building_ecf": "Building transaction",
   "Cancel": "Cancel",
   "Confirm": "Confirm",
   "Confirme_54b": "Confirmed, I will keep it safely.",
   "Estimate_fca": "Estimated Fee",
+  "Export K_3c1": "Export Keypair",
   "Fee Rate": "Fee Rate",
   "Hi, {nic_e46": "Hi, {nickname}",
   "Keypair _4bf": "Keypair Password",
@@ -13,12 +13,12 @@
   "Password_8bf": "Password require more than 6 chars at least.",
   "Please a_449": "Please allow popup window to continuing sign in ...",
   "RAW": "RAW",
-  "Sign in _4ed": "Sign in with",
-  "Signing _1b7": "Signing transaction",
+  "Sign In": "Sign In",
+  "Sign Out": "Sign Out",
   "Submit": "Submit",
   "This pas_31f": "This password and your openid will be used to derive the keypair. PLEASE KEEP IT SAFELY!",
   "Total Am_98b": "Total Amount",
   "Total Ch_c9c": "Total Change",
   "Unspents": "Unspents",
-  "Web Auth": "Web Auth"
+  "Welcome!_69a": "Welcome! Please sign in first before we start."
 }
