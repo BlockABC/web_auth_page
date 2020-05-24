@@ -51,6 +51,7 @@
     "nuxt": "^2.10.2",
     "pbkdf2": "^3.0.17",
     "ts-custom-error": "^3.1.1",
+    "vue-clipboard2": "^0.3.1",
     "vue-i18n": "^8.15.0"
   },
   "devDependencies": {
