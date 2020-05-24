@@ -55,7 +55,7 @@
   import { mdiTwitter, mdiGoogle, mdiFacebook, mdiTelegram, mdiGithub } from '@mdi/js'
 
   import { ApiError } from '~/error'
-  import { sha256 } from '~/modules/helper'
+  import { sha256, derivePrivateKey } from '~/modules/helper'
 
   export default {
     name: 'signin',
@@ -162,7 +162,7 @@
           this.needConfirm = false
         }
       },
-      onSubmitPassword () {
+      async onSubmitPassword () {
         if (this.loading.submit) {
           return
         }
@@ -172,8 +172,9 @@
 
           // WARNING! Modify the following code will break users' keypair !!!
           // Generate keypair from openId and password
-          const privateKey = sha256(this.openId + this.password)
+          const privateKey = await derivePrivateKey(this.openId, this.password)
           const keypair = this.$ckb.helper.privateKeyToAddress(privateKey, this.$ckb.chainId)
+          const passwdHash = sha256(privateKey + this.password)
 
           !process.env.PROD && this.$log.debug('Generate keypair:', keypair)
 
@@ -184,6 +185,7 @@
               confirm: true,
               keypair,
               nickname: this.nickname,
+              passwdHash,
               profile: this.profile,
             }
           })

@@ -11,6 +11,7 @@ export const CACHE = {
   ckb: {
     keypair: 'ckb.keypair',
     nickname: 'ckb.nickname',
+    passwdHash: 'cbk.passwdHash',
     profile: 'ckb.profile',
   },
   page: {

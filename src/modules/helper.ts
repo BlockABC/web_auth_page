@@ -1,4 +1,5 @@
 import createHash from 'create-hash'
+import { pbkdf2 } from 'pbkdf2'
 
 import { ParamError } from '~/error'
 import { IError, INotifyMessage, IRequestMessage, IResponseMessage, IUTXOInput, IUTXOOutput } from '~/interface'
@@ -71,10 +72,41 @@ export function isValidUrl (val: any): boolean {
   }
 }
 
-export function sha256 (data: string | Buffer, encoding: 'utf8' | 'hex' | 'base64' = 'hex') {
+/**
+ * SHA-256
+ *
+ * @param {string | Buffer} data
+ * @param {'utf8' | 'hex' | 'base64'} encoding
+ * @return {string | Buffer}
+ */
+export function sha256 (data: string | Buffer, encoding: createHash.encoding = 'hex'): string | Buffer {
   const hash = createHash('sha256')
   hash.update(data)
   return hash.digest(encoding)
+}
+
+/**
+ * Derive private key with PBKDF2
+ *
+ * @param {string | Buffer} openId
+ * @param {string | Buffer} password
+ * @param {'utf8' | 'hex' | 'base64'} encoding
+ * @return {Promise<string | Buffer>}
+ */
+export function derivePrivateKey (
+  openId: string | Buffer,
+  password: string | Buffer,
+  encoding: createHash.encoding = 'hex'
+): Promise<string | Buffer> {
+  return new Promise((resolve, reject) => {
+    pbkdf2(openId, password, 1e5, 32, 'sha256', (err, derivedKey) => {
+      if (err) {
+        reject(err)
+      }
+
+      resolve(derivedKey.toString(encoding))
+    })
+  })
 }
 
 /**

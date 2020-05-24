@@ -74,8 +74,8 @@ export class MessageController {
       this._signInWin = window.open(process.env.baseUrl + '/signin', 'window', features)
 
       wm.once('confirm-sign-in', async (
-        { confirm, keypair, nickname, profile }:
-        { confirm: boolean, keypair: IKeypair, nickname: string, profile: any }
+        { confirm, keypair, nickname, passwdHash, profile }:
+        { confirm: boolean, keypair: IKeypair, nickname: string, passwdHash: string, profile: any }
       ) => {
         if (!confirm) {
           this._log.info(`Cancel sign in flow [${id}] ...`)
@@ -85,7 +85,7 @@ export class MessageController {
         else {
           this._log.info(`Finish sign in flow [${id}] ...`)
 
-          ctx.store.dispatch(authKeys.signIn, { keypair, nickname, profile })
+          ctx.store.dispatch(authKeys.signIn, { keypair, nickname, passwdHash, profile })
 
           wm.response({
             id,
@@ -104,7 +104,7 @@ export class MessageController {
 
   signedIn (
     { params }:
-    { params: { confirm: boolean, keypair: IKeypair, nickname: string, profile: any } }
+    { params: { confirm: boolean, keypair: IKeypair, nickname: string, passwdHash: string, profile: any } }
   ): void {
     wm.emit('confirm-sign-in', params)
   }
