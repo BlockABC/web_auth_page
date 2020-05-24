@@ -59,6 +59,8 @@ module.exports = {
     name: 'page',
     mode: 'out-in',
   },
+  router: {
+  },
   /*
    * Only these environments is valid
    */
@@ -76,6 +78,7 @@ module.exports = {
    * Plugins to load before mounting the App
    */
   plugins: [
+    { src: '~/plugins/clipboard', mode: 'client' },
     { src: '~/plugins/i18n', mode: 'client' },
     { src: '~/plugins/service', mode: 'client' },
   ],

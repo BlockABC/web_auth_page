@@ -45,7 +45,7 @@
             </v-list-item-content>
           </v-list-item>
           <v-list-item two-line>
-            <v-list-item-content @mouseup="onCopyWIF">
+            <v-list-item-content @mouseup="onCopyPrivateKey">
               <v-list-item-title>
                 {{ $tt('Private Key') }} <v-icon small>{{mdiContentCopy}}</v-icon>
               </v-list-item-title>
@@ -70,7 +70,8 @@
 <script>
 import { mdiContentCopy } from '@mdi/js'
 import { mapState } from 'vuex'
-import { sha256 } from '~/modules/helper'
+
+import { select, sha256 } from '~/modules/helper'
 
 export default {
   name: 'export',
@@ -126,24 +127,18 @@ export default {
       }, () => {
         this.copyFailed = true
       }).finally(() => {
-        this.select(this.$refs.address)
+        select(this.$refs.address)
       })
     },
-    onCopyWIF () {
+    onCopyPrivateKey () {
       this.$copyText(this.keypair.privateKey).then(() => {
         this.copySucceed = true
       }, () => {
         this.copyFailed = true
       }).finally(() => {
-        this.select(this.$refs.privateKey)
+        select(this.$refs.privateKey)
       })
     },
-    select (el) {
-      const range = document.createRange()
-      range.selectNode(el)
-      window.getSelection().removeAllRanges()
-      window.getSelection().addRange(range)
-    }
   }
 }
 </script>

@@ -146,3 +146,18 @@ export function uniqAddresses (arr: IUTXOInput[] | IUTXOOutput[]): string[] {
 
   return existed
 }
+
+/**
+ * Select text in element
+ *
+ * @param {Element} el
+ */
+export function select (el: Element): void {
+  const range = document.createRange()
+  range.selectNode(el)
+  const selection = window.getSelection()
+  if (selection) {
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
+}
