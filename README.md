@@ -189,12 +189,37 @@ Ask user to sign an existing unsigned transaction, useful for complex trading sc
   channel: string,
   id: string,
   result: {
-    signedTransaction: RPC.RawTransaction, // JSON object available for RPC API https://docs.nervos.org/api/rpc.
+    signedTransaction: RPC.RawTransaction, // JSON object available for RPC API https://docs.nervos.org/api/rpc.html#send_transaction.
   },
 }
 ```
 
 > Constructing unsigned transactions and obtaining `IUTXOUnspent[]` requires the use of [One Chain CKB](https://github.com/BlockABC/one_chain_ckb), which you can learn about in this [example](https://github.com/BlockABC/one_chain_ckb/blob/d5d441528d40c3769d087572e569abb3e0ab0784/example/node/ckb_create_unsigned_transaction.js#L18-L39).
+
+#### pushTransaction
+
+Push signed transaction through RPC node without user consent.
+
+```typescript
+// Request
+{
+  channel: string,
+  id: string,
+  method: 'pushTransaction',
+  params: {
+    rawTransaction: RPC.RawTransaction, // JSON object available for RPC API https://docs.nervos.org/api/rpc.html#send_transaction.
+  },
+}
+
+// Response
+{
+  channel: string,
+  id: string,
+  result: {
+    txId: string, // Transaction ID
+  },
+}
+```
 
 
 ## Development

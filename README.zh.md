@@ -194,6 +194,31 @@ interface INotifyMessage {
 
 > 构建未签名交易以及获得 `IUTXOUnspent[]` 需要用到 [One Chain CKB](https://github.com/BlockABC/one_chain_ckb)，这个[示例](https://github.com/BlockABC/one_chain_ckb/blob/d5d441528d40c3769d087572e569abb3e0ab0784/example/node/ckb_create_unsigned_transaction.js#L18-L39)里你可以了解到具体的代码。
 
+#### pushTransaction
+
+通过 RPC 节点推送已签名的交易，无需经过用户同意。
+
+```typescript
+// Request
+{
+  channel: string,
+  id: string,
+  method: 'pushTransaction',
+  params: {
+    rawTransaction: RPC.RawTransaction, // 可用于 https://docs.nervos.org/api/rpc.html#send_transaction 接口的 JSON 对象
+  },
+}
+
+// Response
+{
+  channel: string,
+  id: string,
+  result: {
+    txId: string, // 交易 ID
+  },
+}
+```
+
 
 ## Development
 
