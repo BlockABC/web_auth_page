@@ -1,44 +1,49 @@
 <template>
-  <v-app>
-    <h1 v-if="error.statusCode === 404">
-      {{ pageNotFound }}
-    </h1>
-    <h1 v-else>
-      {{ otherError }}
-    </h1>
+  <v-container class="page-error" fluid>
+    <div class="error-content">
+      <v-alert type="error" min-width="100%">
+        {{ error.message }}
+      </v-alert>
+    </div>
+
     <NuxtLink to="/">
-      Home page
+      <v-btn depressed color="primary">{{ $tt('Back to home') }}</v-btn>
     </NuxtLink>
-  </v-app>
+  </v-container>
 </template>
 
 <script>
 export default {
-  layout: 'empty',
+  layout: 'default',
+  head () {
+    return {
+      title: this.$tt('Error')
+    }
+  },
+
   props: {
     error: {
       type: Object,
       default: null
     }
   },
-  head () {
-    const title =
-      this.error.statusCode === 404 ? this.pageNotFound : this.otherError
-    return {
-      title
-    }
-  },
-  data () {
-    return {
-      pageNotFound: '404 Not Found',
-      otherError: 'An error occurred'
-    }
+  mounted () {
+    console.error('Catched error:', this.error)
   }
 }
 </script>
 
-<style scoped>
-h1 {
-  font-size: 20px;
+<style lang="scss">
+.page-error {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &>.error-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+  }
 }
 </style>
