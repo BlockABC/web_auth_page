@@ -38,6 +38,8 @@
 
   export default {
     name: 'confirm-signing',
+    middleware: ['auth'],
+
     async asyncData ({ app, store }) {
       const keypair = store.state.auth.keypair
       if (!keypair) {

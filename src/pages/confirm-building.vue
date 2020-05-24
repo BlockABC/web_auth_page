@@ -87,6 +87,8 @@ let tx
 
 export default {
   name: 'confirm-building',
+  middleware: ['auth'],
+
   data () {
     return {
       // UI
