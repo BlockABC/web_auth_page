@@ -1,6 +1,7 @@
 {
   "Address": "地址",
   "Back to _c75": "回到首页",
+  "Build Tr_72c": "创建交易",
   "Cancel": "取消",
   "Close": "关闭",
   "Confirm": "确认",
@@ -15,6 +16,7 @@
   "Fee Rate": "矿工费费率",
   "Hi, {nic_e46": "Hi, {nickname}",
   "Keypair _4bf": "公私钥对密码",
+  "Loading": "载入中 ...",
   "Loading _297": "从网络载入最新的 unspents 中 ...",
   "Loading _63c": "载入中 ...",
   "Overview": "概览",
@@ -26,6 +28,7 @@
   "RAW": "RAW",
   "Sign In": "登陆",
   "Sign Out": "退出",
+  "Sign Tra_7dd": "签名交易",
   "Submit": "提交",
   "The pass_829": "您登录时输入的密码。",
   "This pas_31f": "这个密码和 openid 将被用于推导公私钥对。请务必安全的保管它！",

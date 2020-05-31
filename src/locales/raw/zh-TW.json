@@ -1,6 +1,7 @@
 {
   "Address": "Address",
   "Back to _c75": "Back to home",
+  "Build Tr_72c": "Build Transaction",
   "Cancel": "Cancel",
   "Close": "Close",
   "Confirm": "Confirm",
@@ -15,6 +16,7 @@
   "Fee Rate": "Fee Rate",
   "Hi, {nic_e46": "Hi, {nickname}",
   "Keypair _4bf": "Keypair Password",
+  "Loading": "Loading",
   "Loading _297": "Loading latest unspents from network ...",
   "Loading _63c": "Loading ...",
   "Overview": "Overview",
@@ -26,6 +28,7 @@
   "RAW": "RAW",
   "Sign In": "Sign In",
   "Sign Out": "Sign Out",
+  "Sign Tra_7dd": "Sign Transaction",
   "Submit": "Submit",
   "The pass_829": "The password you chosed when you signed in.",
   "This pas_31f": "This password and your openid will be used to derive the keypair. PLEASE KEEP IT SAFELY!",
