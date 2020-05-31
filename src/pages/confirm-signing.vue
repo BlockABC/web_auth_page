@@ -35,25 +35,12 @@
 <script>
   import { CACHE } from '~/constants'
   import { WebAuthError } from '~/error'
+  import { configKeys } from '~/store/config'
 
   export default {
     name: 'confirm-signing',
     middleware: ['auth'],
 
-    async asyncData ({ app, store }) {
-      const keypair = store.state.auth.keypair
-      if (!keypair) {
-        throw WebAuthError.fromCode(100)
-      }
-
-      const params = await app.$localForage.getItem(CACHE.page.signTransaction)
-      await app.$localForage.removeItem(CACHE.page.signTransaction)
-
-      return {
-        unspents: params.unspents,
-        rawTx: params.rawTransaction,
-      }
-    },
     data () {
       return {
         // UI
@@ -70,6 +57,24 @@
       rawTxJSON () {
         return JSON.stringify(this.rawTx, null, '  ')
       },
+    },
+    async asyncData ({ app, store }) {
+      const keypair = store.state.auth.keypair
+      if (!keypair) {
+        throw WebAuthError.fromCode(100)
+      }
+
+      const params = await app.$localForage.getItem(CACHE.page.signTransaction)
+      await app.$localForage.removeItem(CACHE.page.signTransaction)
+
+      return {
+        unspents: params.unspents,
+        rawTx: params.rawTransaction,
+      }
+    },
+
+    created () {
+      this.$store.commit(configKeys.setTitle, this.$tt('Sign Transaction'))
     },
 
     methods: {

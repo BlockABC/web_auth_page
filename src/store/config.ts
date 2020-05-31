@@ -10,7 +10,7 @@ import { RootState } from './index'
 
 const keys = {
   // mutations
-  setVersion: 'setVersion',
+  setTitle: 'setTitle',
   setLanguage: 'setLanguage',
   // getters
   computedLanguage: 'computedLanguage',
@@ -20,6 +20,7 @@ export const configKeys = prefixStoreKeys(keys, 'config')
 
 export const state = () => {
   return {
+    title: 'Web Auth',
     version: process.env.VERSION,
     language: '',
   }
@@ -47,7 +48,7 @@ export const getters: GetterTree<ConfigState, RootState> = {
 }
 
 export const mutations: MutationTree<ConfigState> = {
-  [keys.setVersion]: function (state, version): void {
-    state.version = version
-  }
+  [keys.setTitle]: function (state, title): void {
+    state.title = title
+  },
 }

@@ -82,6 +82,7 @@
 import { CACHE } from '~/constants'
 import { WebAuthError } from '~/error'
 import { uniqAddresses } from '~/modules/helper'
+import { configKeys } from '~/store/config'
 
 let tx
 
@@ -102,6 +103,11 @@ export default {
       feeRate: 0,
       fee: '',
     }
+  },
+  computed: {
+    txJSON () {
+      return JSON.stringify(this.rawTx, null, '  ')
+    },
   },
   async asyncData ({ app, store }) {
     const keypair = store.state.auth.keypair
@@ -133,10 +139,9 @@ export default {
       fee: parseInt(tx.fee) / 1e8,
     }
   },
-  computed: {
-    txJSON () {
-      return JSON.stringify(this.rawTx, null, '  ')
-    },
+
+  created () {
+    this.$store.commit(configKeys.setTitle, this.$tt('Build Transaction'))
   },
 
   methods: {

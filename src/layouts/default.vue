@@ -1,8 +1,8 @@
 <template>
   <v-app class="layout-default">
     <v-app-bar class="flex-grow-0" color="primary" dark dense>
-      <v-toolbar-title>
-        <v-btn class="pa-0" height="auto" text large @click="onGoHome">{{config.title}}</v-btn>
+      <v-toolbar-title class="pointable" @click="onGoHome">
+        {{config.title}}
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -62,3 +62,10 @@
     }
   }
 </script>
+
+<style lang="scss">
+  .v-toolbar__title.pointable {
+    cursor: pointer;
+    user-select: none;
+  }
+</style>

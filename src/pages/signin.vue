@@ -56,14 +56,10 @@
 
   import { ApiError } from '~/error'
   import { sha256, derivePrivateKey } from '~/modules/helper'
+  import { configKeys } from '~/store/config'
 
   export default {
     name: 'signin',
-    head () {
-      return {
-        title: 'Sign In',
-      }
-    },
 
     data () {
       return {
@@ -101,7 +97,6 @@
         backendUrl: process.env.backendUrl,
       }
     },
-
     async asyncData (ctx) {
       if (ctx.query && ctx.query.key) {
         let data
@@ -127,6 +122,10 @@
           }
         }
       }
+    },
+
+    created () {
+      this.$store.commit(configKeys.setTitle, this.$tt('Sign In'))
     },
 
     methods: {

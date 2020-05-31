@@ -7,14 +7,10 @@
 
 <script>
   import { hasKey } from '~/modules/helper'
+  import { configKeys } from '~/store/config'
 
   export default {
     name: 'loading',
-    head () {
-      return {
-        title: 'Loading ...',
-      }
-    },
 
     data () {
       return {
@@ -25,6 +21,11 @@
         }
       }
     },
+
+    created () {
+      this.$store.commit(configKeys.setTitle, this.$tt('Loading'))
+    },
+
     mounted () {
       setTimeout(() => {
         const subject = this.$route.query.subject

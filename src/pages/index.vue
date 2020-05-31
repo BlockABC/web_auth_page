@@ -35,6 +35,7 @@
 
 import { select } from '~/modules/helper'
 import { authKeys } from '~/store/auth'
+import { configKeys } from '~/store/config'
 
 export default {
   name: 'page-index',
@@ -57,8 +58,8 @@ export default {
     })
   },
 
-  mounted () {
-    throw new Error('test error')
+  created () {
+    this.$store.commit(configKeys.setTitle, 'Web Auth')
   },
 
   methods: {

@@ -72,6 +72,7 @@ import { mdiContentCopy } from '@mdi/js'
 import { mapState } from 'vuex'
 
 import { select, sha256 } from '~/modules/helper'
+import { configKeys } from '~/store/config'
 
 export default {
   name: 'export',
@@ -98,6 +99,10 @@ export default {
       'keypair',
       'passwdHash',
     ]),
+  },
+
+  created () {
+    this.$store.commit(configKeys.setTitle, this.$tt('Export'))
   },
 
   methods: {
