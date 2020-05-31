@@ -20,6 +20,8 @@ Web Auth Page 是 Web Auth 框架的前端，必须配合 [Web Auth Server] 一�
 
 你可以通过任何熟悉的方式来配置环境变量，比如 CI 和 [PM2] 都有自己的环境变量配置方式，除此以外可以使用 [dotenv](https://github.com/motdotla/dotenv) 进行配置。将项目目录下的 `.env.example` 复制粘贴并重命名为 `.env` ，然后按需配置即可。
 
+需要注意的是 `DAPP_URL` 必须配置为你使用 [Web Auth SDK] 的 Dapp 所在 URL，`BACKEND_URL` 必须配置为你搭建的 [Web Auth Server] 服务所在的 URL 。
+
 ### 启动服务
 
 ```shell

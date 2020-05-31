@@ -1,6 +1,6 @@
 {
   "name": "web_auth_page",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "blockabc_web_template",
   "author": "Link <xie.al@qq.com>",
   "license": "MIT",
@@ -15,7 +15,6 @@
   "main": "index.js",
   "scripts": {
     "dev": "nuxt",
-    "dev:dapp": "webpack-dev-server --mode=development --config example/webpack.conf.js",
     "prebuild": "npm run i18n",
     "build": "nuxt build",
     "build:analyze": "nuxt build --analyze",

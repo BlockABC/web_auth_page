@@ -232,6 +232,7 @@ First you need to set up and start the [Web Auth Server] service, and then you n
 
 We used [dotenv](https://github.com/motdotla/dotenv) to manage the environment variables, do not forget to copy and rename the `.env.example` in the project directory to `.env` and configure it as needed.
 
+Note that `DAPP_URL` must be configured as the URL of the Dapp you are using with the Web Auth SDK, `BACKEND_URL` must be configured as the URL of the Web Auth Server service you are runing.
 
 ### Launch Development Mode
 
