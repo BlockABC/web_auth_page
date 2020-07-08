@@ -6,6 +6,7 @@
 </template>
 
 <script>
+  import { WM_EVENTS } from '~/constants'
   import { hasKey } from '~/modules/helper'
   import { configKeys } from '~/store/config'
 
@@ -17,7 +18,7 @@
         textMap: {
           default: this.$tt('Loading ...'),
           signIn: this.$tt('Please allow popup window to continuing sign in ...'),
-          'confirm-building': this.$tt('Loading latest unspents from network ...'),
+          [WM_EVENTS.confirmBuilding]: this.$tt('Loading latest unspents from network ...'),
         }
       }
     },
@@ -30,10 +31,10 @@
       setTimeout(() => {
         const subject = this.$route.query.subject
         switch (subject) {
-          case 'confirm-building':
+          case WM_EVENTS.confirmBuilding:
             this.$router.replace('/confirm-building')
             break
-          case 'confirm-signing':
+          case WM_EVENTS.confirmSigning:
             this.$router.replace('/confirm-signing')
             break
         }

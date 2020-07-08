@@ -33,7 +33,7 @@
 </template>
 
 <script>
-  import { CACHE } from '~/constants'
+  import { CACHE, WM_EVENTS } from '~/constants'
   import { WebAuthError } from '~/error'
   import { configKeys } from '~/store/config'
 
@@ -79,11 +79,11 @@
 
     methods: {
       async onConfirm () {
-        this.$wm.emit('confirm-signing', { confirm: true })
+        this.$wm.emit(WM_EVENTS.confirmSigning, { confirm: true })
         this.$router.replace('/')
       },
       async onCancel () {
-        this.$wm.emit('confirm-signing', { confirm: false })
+        this.$wm.emit(WM_EVENTS.confirmSigning, { confirm: false })
         this.$router.replace('/')
       }
     }

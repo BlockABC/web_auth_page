@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { CACHE } from '~/constants'
+  import { CACHE, WM_EVENTS } from '~/constants'
 import { WebAuthError } from '~/error'
 import { uniqAddresses } from '~/modules/helper'
 import { configKeys } from '~/store/config'
@@ -154,11 +154,11 @@ export default {
       this.fee = parseInt(tx.fee) / 1e8
     },
     async onConfirm () {
-      this.$wm.emit('confirm-building', { confirm: true, signedTransaction: tx.toJSON() })
+      this.$wm.emit(WM_EVENTS.confirmBuilding, { confirm: true, signedTransaction: tx.toJSON() })
       this.$router.replace('/')
     },
     async onCancel () {
-      this.$wm.emit('confirm-building', { confirm: false, signedTransaction: null })
+      this.$wm.emit(WM_EVENTS.confirmBuilding, { confirm: false, signedTransaction: null })
       this.$router.replace('/')
     }
   }

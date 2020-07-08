@@ -19,3 +19,9 @@ export const CACHE = {
     signTransaction: 'page.sign-transaction',
   },
 }
+
+export const WM_EVENTS = {
+  confirmSignIn: 'confirm-sign-in',
+  confirmBuilding: 'confirm-building',
+  confirmSigning: 'confirm-signing',
+}

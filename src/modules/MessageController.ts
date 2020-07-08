@@ -1,6 +1,7 @@
+import '@nervosnetwork/ckb-sdk-rpc'
 import { Context } from '@nuxt/types'
 import { Consola } from 'consola'
-import { CACHE } from '~/constants'
+import { CACHE, WM_EVENTS } from '~/constants'
 import { WebAuthError } from '~/error'
 
 import { IKeypair, IRequestMessage, IUTXOToParam, IUTXOUnspent } from '~/interface'
@@ -45,6 +46,7 @@ export class MessageController {
   }
 
   async signIn ({ ctx, id }: { ctx: Context, id: string }): Promise<void> {
+    // If not production environment, sign in with cached data
     if (!process.env.PROD) {
       const cache = await ctx.store.dispatch(authKeys.signInWithCache)
       if (cache) {
@@ -61,6 +63,7 @@ export class MessageController {
       }
     }
 
+    // If sign in window is not exist, create one and start sign in flow
     if (!this._signInWin || this._signInWin.closed) {
       this._log.info(`Start OAuth sign in flow [${id}] ...`)
 
@@ -73,7 +76,7 @@ export class MessageController {
       const features = `left=${left},top=${top},width=${width},height=${height},scrollbars=0,resizable=0`
       this._signInWin = window.open(process.env.baseUrl + '/signin', 'window', features)
 
-      wm.once('confirm-sign-in', async (
+      wm.once(WM_EVENTS.confirmSignIn, async (
         { confirm, keypair, nickname, passwdHash, profile }:
         { confirm: boolean, keypair: IKeypair, nickname: string, passwdHash: string, profile: any }
       ) => {
@@ -106,7 +109,7 @@ export class MessageController {
     { params }:
     { params: { confirm: boolean, keypair: IKeypair, nickname: string, passwdHash: string, profile: any } }
   ): void {
-    wm.emit('confirm-sign-in', params)
+    wm.emit(WM_EVENTS.confirmSignIn, params)
   }
 
   async buildTransaction (
@@ -119,10 +122,10 @@ export class MessageController {
     await ctx.app.$localForage.setItem(CACHE.page.buildTransaction, params)
 
     // Redirect UI to corresponding page
-    ctx.redirect('/loading', { subject: 'confirm-building' })
+    ctx.redirect('/loading', { subject: WM_EVENTS.confirmBuilding })
 
     // Waiting for user's choice
-    wm.once('confirm-building', async (
+    wm.once(WM_EVENTS.confirmBuilding, async (
       { confirm, signedTransaction }:
       { confirm: boolean, signedTransaction: RPC.RawTransaction }
     ) => {
@@ -149,11 +152,10 @@ export class MessageController {
     await ctx.app.$localForage.setItem(CACHE.page.signTransaction, params)
 
     // Redirect UI to corresponding page
-    ctx.redirect('/loading', { subject: 'confirm-signing' })
-
+    ctx.redirect('/loading', { subject: WM_EVENTS.confirmSigning })
 
     // Waiting for user's choice
-    wm.once('confirm-signing', async ({ confirm }: { confirm: boolean }) => {
+    wm.once(WM_EVENTS.confirmSigning, async ({ confirm }: { confirm: boolean }) => {
       if (!confirm) {
         this._log.info(`Cancel transaction signing flow [${id}] ...`)
 
