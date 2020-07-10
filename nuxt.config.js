@@ -1,6 +1,29 @@
-import localforage from 'localforage'
+const localforage = require('localforage')
+const dotenv = require('dotenv')
+const fs = require('fs')
+const path = require('path')
 
-require('dotenv').config()
+// Load dotenv files for environments
+let environments = {}
+for (const envFile of ['.production.env', '.env']) {
+  try {
+    environments = Object.assign(environments, dotenv.parse(fs.readFileSync(path.resolve(process.cwd(), envFile))))
+  }
+  catch (err) {
+    if (envFile === '.env' && err.code === 'ENOENT') {
+      continue
+    }
+    throw err
+  }
+}
+
+// If process.env[key] is already exists, never replace it.
+Object.keys(environments).forEach(function (key) {
+  if (!Object.prototype.hasOwnProperty.call(process.env, key)) {
+    process.env[key] = environments[key]
+  }
+})
+
 const pkgObj = require('./package.json')
 const colors = require('vuetify/es5/util/colors').default
 const PROD = process.env.NODE_ENV === 'production'
