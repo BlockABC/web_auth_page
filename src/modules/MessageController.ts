@@ -1,4 +1,3 @@
-import '@nervosnetwork/ckb-sdk-rpc'
 import { Context } from '@nuxt/types'
 import { Consola } from 'consola'
 import { CACHE, WM_EVENTS } from '~/constants'

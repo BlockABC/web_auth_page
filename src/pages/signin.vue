@@ -5,6 +5,9 @@
         <v-btn fab dark large color="blue" :loading="loading.twitter" @click.prevent="onTwitter">
           <v-icon>{{mdiTwitter}}</v-icon>
         </v-btn>
+        <v-btn fab dark large color="green" title="Line" :loading="loading.line" @click.prevent="onLine">
+          <v-icon>{{mdiCommentProcessing}}</v-icon>
+        </v-btn>
         <v-btn fab dark large color="grey lighten-1" @click.prevent="onGoogle">
           <v-icon>{{mdiGoogle}}</v-icon>
         </v-btn>
@@ -52,7 +55,7 @@
 </template>
 
 <script>
-  import { mdiTwitter, mdiGoogle, mdiFacebook, mdiTelegram, mdiGithub } from '@mdi/js'
+  import { mdiTwitter, mdiGoogle, mdiFacebook, mdiTelegram, mdiGithub, mdiCommentProcessing } from '@mdi/js'
 
   import { ApiError } from '~/error'
   import { sha256, derivePrivateKey } from '~/modules/helper'
@@ -69,9 +72,11 @@
         mdiFacebook,
         mdiTelegram,
         mdiGithub,
+        mdiCommentProcessing,
         // UI
         loading: {
           twitter: false,
+          line: false,
           submit: false,
         },
         needPassword: false,
@@ -133,6 +138,12 @@
         if (!this.loading.twitter) {
           window.location.href = `${this.backendUrl}/auth/twitter?redirect=${this.currentUrl}`
           this.loading.twitter = true
+        }
+      },
+      onLine () {
+        if (!this.loading.twitter) {
+          window.location.href = `${this.backendUrl}/auth/line?redirect=${this.currentUrl}`
+          this.loading.line = true
         }
       },
       onGoogle () {

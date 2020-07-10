@@ -1,3 +1,4 @@
+import '@nervosnetwork/ckb-sdk-rpc'
 
 declare var onechain: any;
 
