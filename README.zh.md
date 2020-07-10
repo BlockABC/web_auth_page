@@ -230,7 +230,12 @@ interface INotifyMessage {
 
 ### 配置环境变量
 
-我们采用了 [dotenv](https://github.com/motdotla/dotenv) 来管理环境变量，请别忘记将项目目录下的 `.env.example` 复制粘贴并重命名为 `.env` ，然后按需配置。
+我们采用了 [dotenv](https://github.com/motdotla/dotenv) 来管理环境变量，并做了一个常见的改进。项目根目录下有一个 `.production.env` 文
+件，其中包含了所有可用的环境变量。当需要自定义其中某些变量时，可以新建一个 `.env` 文件，并在仿照 `.production.env` 在其中定义需要修改的环境变量
+，最终 `.env` 中的环境变量将会覆盖 `.production.env` 中的环境变量。
+
+- 请注意 `DAPP_URL` 必须配置为使用 Web Auth SDK 的 Dapp 的 URL 。
+- 请注意 `BACKEND_URL` 必须配置为你的 Web Auth Server 服务的 URL 。
 
 ### 启动开发模式
 

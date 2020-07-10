@@ -230,9 +230,13 @@ First you need to set up and start the [Web Auth Server] service, and then you n
 
 ### Environment Variables
 
-We used [dotenv](https://github.com/motdotla/dotenv) to manage the environment variables, do not forget to copy and rename the `.env.example` in the project directory to `.env` and configure it as needed.
+We used [dotenv](https://github.com/motdotla/dotenv) to manage the environment variables, and a common improvement has 
+been made. There is a `.production.env` file in the project root directory which contains all available environment 
+variables. When you need to customize some of these variables, you can create a new `.env` file and redefine the variables
+exists in `.production.env`. Eventually the variables in `.env` will override the variables in `.production.env`.
 
-Note that `DAPP_URL` must be configured as the URL of the Dapp you are using with the Web Auth SDK, `BACKEND_URL` must be configured as the URL of the Web Auth Server service you are runing.
+- Note that `DAPP_URL` must be configured as the URL of the Dapp you are using with the Web Auth SDK.
+- Note that `BACKEND_URL` must be configured as the URL of the Web Auth Server service you are runing.
 
 ### Launch Development Mode
 
