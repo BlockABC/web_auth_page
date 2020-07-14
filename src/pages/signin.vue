@@ -63,6 +63,7 @@
 
   export default {
     name: 'signin',
+    middleware: ['iframe-guard'],
 
     data () {
       return {
