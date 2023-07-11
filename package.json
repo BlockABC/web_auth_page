@@ -47,7 +47,7 @@
     "eventemitter3": "^4.0.0",
     "i18n-abc": "^0.3.3",
     "js-cookie": "^2.2.1",
-    "nuxt": "^2.10.2",
+    "nuxt": "^2.17.0",
     "pbkdf2": "^3.0.17",
     "ts-custom-error": "^3.1.1",
     "vue-clipboard2": "^0.3.1",
